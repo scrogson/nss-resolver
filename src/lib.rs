@@ -69,12 +69,11 @@ unsafe fn fill_hostent(
 }
 
 #[repr(C)]
-#[allow(non_camel_case_types)]
-pub enum nss_status {
-    NSS_STATUS_TRYAGAIN = -2,
-    NSS_STATUS_UNAVAIL = -1,
-    NSS_STATUS_NOTFOUND = 0,
-    NSS_STATUS_SUCCESS = 1,
+pub enum Status {
+    TryAgain = -2,
+    Unavailable = -1,
+    NotFound = 0,
+    Success = 1,
 }
 
 pub unsafe extern "C" fn _nss_resolver_gethostbyname2_r(
@@ -85,7 +84,7 @@ pub unsafe extern "C" fn _nss_resolver_gethostbyname2_r(
     _buflen: usize,
     _errnop: *mut c_int,
     _h_errnop: *mut c_int,
-) -> nss_status {
+) -> Status {
     // First, convert the C pointer `name` to a Rust string.
     // This fails if the string isn't UTF-8.
     if let Ok(name_str) = CStr::from_ptr(name).to_str() {
@@ -97,13 +96,13 @@ pub unsafe extern "C" fn _nss_resolver_gethostbyname2_r(
             for domain in domains.split(',') {
                 if name_tld.eq_ignore_ascii_case(domain) {
                     fill_hostent(name, af, result);
-                    return nss_status::NSS_STATUS_SUCCESS;
+                    return Status::Success;
                 }
             }
         }
     }
 
-    nss_status::NSS_STATUS_NOTFOUND
+    Status::NotFound
 }
 
 pub unsafe extern "C" fn _nss_resolver_gethostbyname_r(
@@ -113,7 +112,7 @@ pub unsafe extern "C" fn _nss_resolver_gethostbyname_r(
     buflen: usize,
     errnop: *mut c_int,
     h_errnop: *mut c_int,
-) -> nss_status {
+) -> Status {
     return _nss_resolver_gethostbyname2_r(name, AF_INET, result, buffer, buflen, errnop, h_errnop);
 }
 
@@ -127,6 +126,6 @@ pub unsafe extern "C" fn _nss_resolver_gethostbyaddr_r(
     _buflen: usize,
     _errnop: *mut c_int,
     _h_errnop: *mut c_int,
-) -> nss_status {
-    nss_status::NSS_STATUS_UNAVAIL
+) -> Status {
+    Status::Unavailable
 }
