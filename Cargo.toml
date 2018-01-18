@@ -1,0 +1,10 @@
+[package]
+name = "nss-resolver"
+version = "0.1.0"
+authors = ["Sonny Scroggin <sonny@scrogg.in>"]
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+libc = "0.2.36"
