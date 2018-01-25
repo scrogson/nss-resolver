@@ -7,4 +7,4 @@ authors = ["Sonny Scroggin <sonny@scrogg.in>"]
 crate-type = ["cdylib"]
 
 [dependencies]
-libc = "0.2.36"
+nsswitch_service = {git = "https://github.com/jorendorff/nsswitch_service"}
